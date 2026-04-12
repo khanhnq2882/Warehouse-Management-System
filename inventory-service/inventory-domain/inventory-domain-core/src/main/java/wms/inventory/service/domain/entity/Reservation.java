@@ -12,6 +12,38 @@ public class Reservation extends BaseEntity<ReservationId> {
     private Quantity quantity;
     private ReservationStatus reservationStatus;
 
+    public OrderId getOrderId() {
+        return orderId;
+    }
+
+    public WarehouseId getWarehouseId() {
+        return warehouseId;
+    }
+
+    public ProductId getProductId() {
+        return productId;
+    }
+
+    public void setProductId(ProductId productId) {
+        this.productId = productId;
+    }
+
+    public Quantity getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(Quantity quantity) {
+        this.quantity = quantity;
+    }
+
+    public ReservationStatus getReservationStatus() {
+        return reservationStatus;
+    }
+
+    public void setReservationStatus(ReservationStatus reservationStatus) {
+        this.reservationStatus = reservationStatus;
+    }
+
     private Reservation(Builder builder) {
         super.setId(builder.reservationId);
         setCreatedAt(builder.createdAt);
@@ -22,7 +54,6 @@ public class Reservation extends BaseEntity<ReservationId> {
         quantity = builder.quantity;
         reservationStatus = builder.reservationStatus;
     }
-
 
     public static final class Builder {
         private ReservationId reservationId;

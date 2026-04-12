@@ -4,7 +4,7 @@ import wms.common.service.domain.valueobject.BaseId;
 import java.util.UUID;
 
 public class ReservationId extends BaseId<UUID> {
-    protected ReservationId(UUID value) {
+    public ReservationId(UUID value) {
         super(value);
     }
 }

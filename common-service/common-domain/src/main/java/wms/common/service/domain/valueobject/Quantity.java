@@ -12,12 +12,12 @@ public record Quantity(Integer quantity) {
         return this.quantity != null && this.quantity > other.quantity();
     }
 
-    public Quantity add(Quantity other) {
-        return new Quantity(this.quantity + other.quantity());
+    public Quantity add(Quantity otherQuantity) {
+        return new Quantity(this.quantity + otherQuantity.quantity());
     }
 
-    public Quantity subtract(Quantity other) {
-        return new Quantity(this.quantity - other.quantity());
+    public Quantity subtract(Quantity otherQuantity) {
+        return new Quantity(this.quantity - otherQuantity.quantity());
     }
 
     public Quantity multiply(int multiplier) {
