@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="product-application-service" />
+        <module name="kafka-model" />
+        <module name="inventory-domain-core" />
+        <module name="kafka-consumer" />
+        <module name="kafka-producer" />
+        <module name="product-container" />
+        <module name="kafka-config-data" />
+        <module name="product-data-access" />
+        <module name="product-domain-core" />
+        <module name="product-messaging" />
+        <module name="common-domain" />
+        <module name="inventory-application-service" />
+        <module name="product-application" />
+      </profile>
+    </annotationProcessing>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="common-domain" options="-parameters" />
+      <module name="inventory-application-service" options="-parameters" />
+      <module name="inventory-domain-core" options="-parameters" />
+      <module name="kafka-config-data" options="-parameters" />
+      <module name="kafka-consumer" options="-parameters" />
+      <module name="kafka-model" options="-parameters" />
+      <module name="kafka-producer" options="-parameters" />
+      <module name="product-application" options="-parameters" />
+      <module name="product-application-service" options="-parameters" />
+      <module name="product-container" options="-parameters" />
+      <module name="product-data-access" options="-parameters" />
+      <module name="product-domain-core" options="-parameters" />
+      <module name="product-messaging" options="-parameters" />
+    </option>
+  </component>
+</project>

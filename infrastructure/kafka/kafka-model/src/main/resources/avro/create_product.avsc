@@ -1,0 +1,57 @@
+{
+    "namespace": "wbs.kafka.product.avro.model",
+    "type": "record",
+    "name": "CreateProductAvroModel",
+      "fields": [
+        {
+          "name": "productId",
+          "type": "string"
+        },
+        {
+          "name": "sku",
+          "type": "string"
+        },
+        {
+          "name": "productName",
+          "type": "string"
+        },
+        {
+          "name": "productDescription",
+          "type": ["null", "string"],
+          "default": null
+        },
+        {
+            "name": "productPrice",
+            "type": {
+                "type": "bytes",
+                "logicalType": "decimal",
+                "precision": 10,
+                "scale": 2
+            }
+        },
+        {
+          "name": "supplierId",
+          "type": "string"
+        },
+        {
+          "name": "categoryId",
+          "type": "string"
+        },
+        {
+          "name": "productStatus",
+          "type": {
+            "type": "enum",
+            "name": "ProductStatus",
+            "symbols": ["ACTIVE", "INACTIVE", "DISCONTINUED"]
+          }
+        },
+        {
+          "name": "failureMessages",
+          "type": {
+            "type": "array",
+            "items": "string"
+          },
+          "default": []
+        }
+      ]
+}
