@@ -16,5 +16,4 @@ public final class CreateProductRequest {
     private final @NotNull String productDescription;
     private final @NotNull BigDecimal productPrice;
     private final @NotNull UUID categoryId;
-    private final @NotNull UUID supplierId;
 }

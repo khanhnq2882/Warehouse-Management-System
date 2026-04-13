@@ -1,7 +1,7 @@
 package wms.product.domain.core.entity;
 
 import wms.common.service.domain.entity.AggregateRoot;
-import wms.common.service.domain.valueobject.CategoryId;
+import wms.product.domain.core.valueobject.CategoryId;
 import java.time.LocalDateTime;
 
 public class Category extends AggregateRoot<CategoryId> {

@@ -12,6 +12,10 @@ public record Quantity(Integer quantity) {
         return this.quantity != null && this.quantity > other.quantity();
     }
 
+    public boolean isLessThan(Quantity other) {
+        return this.quantity != null && this.quantity < other.quantity();
+    }
+
     public Quantity add(Quantity otherQuantity) {
         return new Quantity(this.quantity + otherQuantity.quantity());
     }

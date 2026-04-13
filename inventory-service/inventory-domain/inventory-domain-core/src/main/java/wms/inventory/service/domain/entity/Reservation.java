@@ -1,16 +1,25 @@
 package wms.inventory.service.domain.entity;
 
 import wms.common.service.domain.entity.BaseEntity;
-import wms.common.service.domain.valueobject.*;
+import wms.common.service.domain.valueobject.OrderId;
+import wms.common.service.domain.valueobject.ProductId;
+import wms.common.service.domain.valueobject.Quantity;
+import wms.common.service.domain.valueobject.WarehouseId;
 import wms.inventory.service.domain.valueobject.ReservationId;
+import wms.inventory.service.domain.valueobject.ReservationStatus;
 import java.time.LocalDateTime;
 
 public class Reservation extends BaseEntity<ReservationId> {
     private final OrderId orderId;
     private final WarehouseId warehouseId;
-    private ProductId productId;
-    private Quantity quantity;
+    private final ProductId productId;
+    private final Quantity quantity;
     private ReservationStatus reservationStatus;
+    private LocalDateTime expiresAt;
+
+    public boolean isReservationExpired() {
+        return reservationStatus == ReservationStatus.RESERVED && expiresAt != null && LocalDateTime.now().isAfter(expiresAt);
+    }
 
     public OrderId getOrderId() {
         return orderId;
@@ -24,16 +33,8 @@ public class Reservation extends BaseEntity<ReservationId> {
         return productId;
     }
 
-    public void setProductId(ProductId productId) {
-        this.productId = productId;
-    }
-
     public Quantity getQuantity() {
         return quantity;
-    }
-
-    public void setQuantity(Quantity quantity) {
-        this.quantity = quantity;
     }
 
     public ReservationStatus getReservationStatus() {
@@ -44,6 +45,15 @@ public class Reservation extends BaseEntity<ReservationId> {
         this.reservationStatus = reservationStatus;
     }
 
+    public LocalDateTime getExpiresAt() {
+        return expiresAt;
+    }
+
+    public void setExpiresAt(LocalDateTime expiresAt) {
+        this.expiresAt = expiresAt;
+    }
+
+
     private Reservation(Builder builder) {
         super.setId(builder.reservationId);
         setCreatedAt(builder.createdAt);
@@ -53,6 +63,7 @@ public class Reservation extends BaseEntity<ReservationId> {
         productId = builder.productId;
         quantity = builder.quantity;
         reservationStatus = builder.reservationStatus;
+        expiresAt = builder.expiresAt;
     }
 
     public static final class Builder {
@@ -64,6 +75,7 @@ public class Reservation extends BaseEntity<ReservationId> {
         private ProductId productId;
         private Quantity quantity;
         private ReservationStatus reservationStatus;
+        private LocalDateTime expiresAt;
 
         private Builder() {
         }
@@ -109,6 +121,11 @@ public class Reservation extends BaseEntity<ReservationId> {
 
         public Builder reservationStatus(ReservationStatus val) {
             reservationStatus = val;
+            return this;
+        }
+
+        public Builder expiresAt(LocalDateTime val) {
+            expiresAt = val;
             return this;
         }
 

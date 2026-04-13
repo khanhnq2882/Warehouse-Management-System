@@ -1,4 +1,4 @@
-package wms.inventory.service.domain.event;
+package wms.inventory.service.domain.exception;
 
 import wms.common.service.domain.exception.DomainException;
 

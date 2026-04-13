@@ -3,10 +3,9 @@ package wms.product.application.service.mapper;
 import org.springframework.stereotype.Component;
 import wms.product.application.service.dto.CreateProductRequest;
 import wms.product.application.service.dto.CreateProductResponse;
-import wms.common.service.domain.valueobject.CategoryId;
+import wms.product.domain.core.valueobject.CategoryId;
 import wms.common.service.domain.valueobject.Money;
-import wms.common.service.domain.valueobject.ProductStatus;
-import wms.common.service.domain.valueobject.SupplierId;
+import wms.product.domain.core.valueobject.ProductStatus;
 import wms.product.domain.core.entity.Product;
 import java.time.LocalDateTime;
 
@@ -20,7 +19,6 @@ public class ProductDataMapper {
                 .productDescription(createProductRequest.getProductDescription())
                 .productPrice(new Money(createProductRequest.getProductPrice()))
                 .categoryId(new CategoryId(createProductRequest.getCategoryId()))
-                .supplierId(new SupplierId(createProductRequest.getSupplierId()))
                 .productStatus(ProductStatus.ACTIVE)
                 .createdAt(LocalDateTime.now())
                 .build();

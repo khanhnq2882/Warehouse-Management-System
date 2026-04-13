@@ -3,7 +3,7 @@ package wms.product.data.access.entity;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
-import wms.common.service.domain.valueobject.ProductStatus;
+import wms.product.domain.core.valueobject.ProductStatus;
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -31,12 +31,6 @@ public class ProductEntity {
 
     @Enumerated(EnumType.STRING)
     private ProductStatus productStatus;
-
-    private String failureMessages;
-
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "supplier_id")
-    private SupplierEntity supplier;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "category_id")

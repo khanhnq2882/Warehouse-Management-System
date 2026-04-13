@@ -2,34 +2,38 @@ package wms.inventory.service.domain.entity;
 
 import wms.common.service.domain.entity.AggregateRoot;
 import wms.common.service.domain.valueobject.*;
-import wms.inventory.service.domain.event.InventoryDomainException;
+import wms.inventory.service.domain.exception.InventoryDomainException;
 import wms.inventory.service.domain.valueobject.InventoryItemId;
 import wms.inventory.service.domain.valueobject.ReservationId;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
-import java.util.Random;
 import java.util.UUID;
+import wms.inventory.service.domain.valueobject.ReservationStatus;
 
 public class InventoryItem extends AggregateRoot<InventoryItemId> {
     private final ProductId productId;
     private final WarehouseId warehouseId;
-
-    // Tổng số hàng thực tế trong kho
     private Quantity onHandQuantity;
     private List<Reservation> reservations;
     private int version;
 
-    public void reverse(OrderId orderId, Quantity orderQuantity) {
-        Reservation existReservation = findReservation(orderId);
+    public void reserve(OrderId orderId, Quantity orderQuantity) {
+        Reservation existReservation = findReservationByOrderId(orderId);
         if (Objects.nonNull(existReservation)) {
             if (existReservation.getReservationStatus() == ReservationStatus.RESERVED) return;
             if (existReservation.getReservationStatus() == ReservationStatus.DEDUCTED) {
                 throw new InventoryDomainException("Already deducted, cannot reserve again.");
             }
+            if (existReservation.getReservationStatus() == ReservationStatus.RELEASED) {
+                throw new InventoryDomainException("Already released, cannot reserve again.");
+            }
         }
-        Quantity availableQuantity = onHandQuantity.subtract(totalReserved());
+        Quantity totalReservedQuantity = reservations.stream()
+                .filter(reservation -> reservation.getReservationStatus() == ReservationStatus.RESERVED)
+                .map(Reservation::getQuantity)
+                .reduce(Quantity.ZERO, Quantity::add);
+        Quantity availableQuantity = onHandQuantity.subtract(totalReservedQuantity);
         if (orderQuantity.isGreaterThan(availableQuantity)) {
             throw new InventoryDomainException("Out of stock.");
         }
@@ -41,44 +45,43 @@ public class InventoryItem extends AggregateRoot<InventoryItemId> {
                 .quantity(orderQuantity)
                 .reservationStatus(ReservationStatus.RESERVED)
                 .createdAt(LocalDateTime.now())
+                .expiresAt(LocalDateTime.now().plusMinutes(15))
                 .build();
         reservations.add(reservation);
     }
 
+    public void deduct(OrderId orderId) {
+        Reservation orderReservation = findReservationByOrderId(orderId);
+        if (orderReservation == null) throw new InventoryDomainException("Reservation not found");
+        if (orderReservation.isReservationExpired()) throw new InventoryDomainException("Reservation is expired");
+        if (orderReservation.getReservationStatus() == ReservationStatus.DEDUCTED) return;
+        if (orderReservation.getReservationStatus() == ReservationStatus.RELEASED) {
+            throw new InventoryDomainException("Cannot deduct released reservation");
+        }
+        if (onHandQuantity.isLessThan(orderReservation.getQuantity())) {
+            throw new InventoryDomainException("Invalid state: not enough onHand");
+        }
+        if (orderReservation.getReservationStatus() == ReservationStatus.RESERVED) {
+            onHandQuantity = onHandQuantity.subtract(orderReservation.getQuantity());
+            orderReservation.setReservationStatus(ReservationStatus.DEDUCTED);
+        }
+    }
+
     public void release(OrderId orderId) {
-        Reservation reservation = findReservation(orderId);
-        if (reservation == null) return;
-        if (reservation.getReservationStatus() == ReservationStatus.RELEASED) return;
-        if (reservation.getReservationStatus() == ReservationStatus.DEDUCTED) {
-            throw new IllegalStateException("Cannot release deducted reservation");
+        Reservation orderReservation = findReservationByOrderId(orderId);
+        if (orderReservation == null) return;
+        if (orderReservation.getReservationStatus() == ReservationStatus.RELEASED) return;
+        if (orderReservation.getReservationStatus() == ReservationStatus.DEDUCTED) {
+            throw new InventoryDomainException("Cannot release deducted reservation");
         }
-        reservation.setReservationStatus(ReservationStatus.RELEASED);
+        if (orderReservation.getReservationStatus() == ReservationStatus.RESERVED) {
+            orderReservation.setReservationStatus(ReservationStatus.RELEASED);
+        }
     }
 
-    public void deduct(OrderId orderId, Quantity orderQuantity) {
-        Reservation reservation = findReservation(orderId);
-        if (reservation == null) throw new IllegalStateException("Reservation not found");
-        if (reservation.getReservationStatus() == ReservationStatus.DEDUCTED) return;
-        if (reservation.getReservationStatus() == ReservationStatus.RELEASED) {
-            throw new IllegalStateException("Cannot deduct released reservation");
-        }
-        if (reservation.getQuantity().isGreaterThan(orderQuantity)) {
-            throw new IllegalStateException("Invalid state: not enough onHand");
-        }
-        onHandQuantity = onHandQuantity.subtract(reservation.getQuantity());
-        reservation.setReservationStatus(ReservationStatus.DEDUCTED);
-    }
-
-    private Quantity totalReserved() {
+    private Reservation findReservationByOrderId(OrderId orderId) {
         return reservations.stream()
-                .filter(r -> r.getReservationStatus() == ReservationStatus.RESERVED)
-                .map(Reservation::getQuantity)
-                .reduce(Quantity.ZERO, Quantity::add);
-    }
-
-    private Reservation findReservation(OrderId orderId) {
-        return reservations.stream()
-                .filter(r -> r.getOrderId().equals(orderId))
+                .filter(reservation -> reservation.getOrderId().equals(orderId))
                 .findFirst()
                 .orElse(null);
     }

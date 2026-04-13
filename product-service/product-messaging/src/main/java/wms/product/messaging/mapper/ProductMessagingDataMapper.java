@@ -17,10 +17,8 @@ public class ProductMessagingDataMapper {
                 .setProductName(product.getProductName())
                 .setProductDescription(product.getProductDescription())
                 .setProductPrice(product.getProductPrice().amount())
-                .setSupplierId(product.getSupplierId().getValue().toString())
                 .setCategoryId(product.getCategoryId().getValue().toString())
                 .setProductStatus(ProductStatus.valueOf(product.getProductStatus().name()))
-                .setFailureMessages(product.getFailureMessages())
                 .build();
     }
 }

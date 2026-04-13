@@ -1,25 +1,22 @@
 package wms.product.domain.core.entity;
 
 import wms.common.service.domain.entity.AggregateRoot;
-import wms.common.domain.value.object.*;
 import wms.common.service.domain.valueobject.*;
 import wms.product.domain.core.exception.ProductDomainException;
+import wms.product.domain.core.valueobject.CategoryId;
+import wms.product.domain.core.valueobject.ProductStatus;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
 public class Product extends AggregateRoot<ProductId> {
     private final String sku;
-    private String productName;
-    private String productDescription;
-    private Money productPrice;
-//    private List<ProductImage> productImages;
-    private final SupplierId supplierId;
+    private final String productName;
+    private final String productDescription;
+    private final Money productPrice;
     private final CategoryId categoryId;
-    private ProductStatus productStatus;
-    private List<String> failureMessages;
+    private final ProductStatus productStatus;
 
     private Product(Builder builder) {
         super.setId(builder.productId);
@@ -29,11 +26,8 @@ public class Product extends AggregateRoot<ProductId> {
         productName = builder.productName;
         productDescription = builder.productDescription;
         productPrice = builder.productPrice;
-//        productImages = builder.productImages;
-        supplierId = builder.supplierId;
         categoryId = builder.categoryId;
         productStatus = builder.productStatus;
-        failureMessages = builder.failureMessages;
     }
 
     public static Builder builder() {
@@ -56,23 +50,12 @@ public class Product extends AggregateRoot<ProductId> {
         return productPrice;
     }
 
-//    public List<ProductImage> getProductImages() {
-//        return productImages;
-//    }
-
-    public SupplierId getSupplierId() {
-        return supplierId;
-    }
-
     public CategoryId getCategoryId() {
         return categoryId;
     }
 
     public ProductStatus getProductStatus() {
         return productStatus;
-    }
-    public List<String> getFailureMessages() {
-        return failureMessages;
     }
 
     public void createProduct() {
@@ -92,7 +75,6 @@ public class Product extends AggregateRoot<ProductId> {
         validateProductSku();
         validatePrice();
         validateIdNotExist(categoryId, "Category ID " + categoryId + " is not exists!");
-        validateIdNotExist(supplierId, "Supplier ID " + supplierId + " is not exists!");
     }
 
     private void validateProductSku() {
@@ -106,18 +88,9 @@ public class Product extends AggregateRoot<ProductId> {
             throw new ProductDomainException("Product price must be greater than 0!");
     }
 
-    private void validateIdNotExist(BaseId baseId, String message) {
-        if (Objects.isNull(baseId))
+    private void validateIdNotExist(CategoryId categoryId, String message) {
+        if (Objects.isNull(categoryId))
             throw new ProductDomainException(message);
-    }
-
-    private void updateFailureMessages(List<String> failureMessages) {
-        if (this.failureMessages != null && failureMessages != null) {
-            this.failureMessages.addAll(failureMessages.stream().filter(message -> !message.isEmpty()).toList());
-        }
-        if (this.failureMessages == null) {
-            this.failureMessages = failureMessages;
-        }
     }
 
     public static final class Builder {
@@ -128,11 +101,8 @@ public class Product extends AggregateRoot<ProductId> {
         private String productName;
         private String productDescription;
         private Money productPrice;
-//        private List<ProductImage> productImages;
-        private SupplierId supplierId;
         private CategoryId categoryId;
         private ProductStatus productStatus;
-        private List<String> failureMessages;
 
         private Builder() {
         }
@@ -176,16 +146,6 @@ public class Product extends AggregateRoot<ProductId> {
             return this;
         }
 
-//        public Builder productImages(List<ProductImage> val) {
-//            productImages = val;
-//            return this;
-//        }
-
-        public Builder supplierId(SupplierId val) {
-            supplierId = val;
-            return this;
-        }
-
         public Builder categoryId(CategoryId val) {
             categoryId = val;
             return this;
@@ -193,11 +153,6 @@ public class Product extends AggregateRoot<ProductId> {
 
         public Builder productStatus(ProductStatus val) {
             productStatus = val;
-            return this;
-        }
-
-        public Builder failureMessages(List<String> val) {
-            failureMessages = val;
             return this;
         }
 
