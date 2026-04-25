@@ -7,4 +7,9 @@ public class UpdateProductEvent extends ProductEvent{
     public UpdateProductEvent(Product product, ZonedDateTime createdAt) {
         super(product, createdAt);
     }
+
+    @Override
+    public void fire() {
+
+    }
 }

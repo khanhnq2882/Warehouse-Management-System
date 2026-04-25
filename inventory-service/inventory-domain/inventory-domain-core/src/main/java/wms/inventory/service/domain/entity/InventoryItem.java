@@ -19,35 +19,37 @@ public class InventoryItem extends AggregateRoot<InventoryItemId> {
     private int version;
 
     public void reserve(OrderId orderId, Quantity orderQuantity) {
-        Reservation existReservation = findReservationByOrderId(orderId);
-        if (Objects.nonNull(existReservation)) {
-            if (existReservation.getReservationStatus() == ReservationStatus.RESERVED) return;
-            if (existReservation.getReservationStatus() == ReservationStatus.DEDUCTED) {
+        Reservation orderReservation = findReservationByOrderId(orderId);
+        if (Objects.nonNull(orderReservation)) {
+            if (orderReservation.getReservationStatus() == ReservationStatus.RESERVED) return;
+            if (orderReservation.getReservationStatus() == ReservationStatus.DEDUCTED) {
                 throw new InventoryDomainException("Already deducted, cannot reserve again.");
             }
-            if (existReservation.getReservationStatus() == ReservationStatus.RELEASED) {
+            if (orderReservation.getReservationStatus() == ReservationStatus.RELEASED) {
                 throw new InventoryDomainException("Already released, cannot reserve again.");
             }
+        } else {
+            Quantity totalReservedQuantity = reservations.stream()
+                    .filter(reservation -> reservation.getReservationStatus() == ReservationStatus.RESERVED)
+                    .filter(reservation -> reservation.getExpiresAt() != null && reservation.getExpiresAt().isAfter(LocalDateTime.now()))
+                    .map(Reservation::getQuantity)
+                    .reduce(Quantity.ZERO, Quantity::add);
+            Quantity availableQuantity = onHandQuantity.subtract(totalReservedQuantity);
+            if (orderQuantity.isGreaterThan(availableQuantity)) {
+                throw new InventoryDomainException("Out of stock.");
+            }
+            Reservation newOrderReservation = Reservation.Builder.builder()
+                    .reservationId(new ReservationId(UUID.randomUUID()))
+                    .orderId(orderId)
+                    .warehouseId(warehouseId)
+                    .productId(productId)
+                    .quantity(orderQuantity)
+                    .reservationStatus(ReservationStatus.RESERVED)
+                    .createdAt(LocalDateTime.now())
+                    .expiresAt(LocalDateTime.now().plusMinutes(15))
+                    .build();
+            reservations.add(newOrderReservation);
         }
-        Quantity totalReservedQuantity = reservations.stream()
-                .filter(reservation -> reservation.getReservationStatus() == ReservationStatus.RESERVED)
-                .map(Reservation::getQuantity)
-                .reduce(Quantity.ZERO, Quantity::add);
-        Quantity availableQuantity = onHandQuantity.subtract(totalReservedQuantity);
-        if (orderQuantity.isGreaterThan(availableQuantity)) {
-            throw new InventoryDomainException("Out of stock.");
-        }
-        Reservation reservation = Reservation.Builder.builder()
-                .reservationId(new ReservationId(UUID.randomUUID()))
-                .orderId(orderId)
-                .warehouseId(warehouseId)
-                .productId(productId)
-                .quantity(orderQuantity)
-                .reservationStatus(ReservationStatus.RESERVED)
-                .createdAt(LocalDateTime.now())
-                .expiresAt(LocalDateTime.now().plusMinutes(15))
-                .build();
-        reservations.add(reservation);
     }
 
     public void deduct(OrderId orderId) {
@@ -69,7 +71,7 @@ public class InventoryItem extends AggregateRoot<InventoryItemId> {
 
     public void release(OrderId orderId) {
         Reservation orderReservation = findReservationByOrderId(orderId);
-        if (orderReservation == null) return;
+        if (orderReservation == null) throw new InventoryDomainException("Reservation not found");
         if (orderReservation.getReservationStatus() == ReservationStatus.RELEASED) return;
         if (orderReservation.getReservationStatus() == ReservationStatus.DEDUCTED) {
             throw new InventoryDomainException("Cannot release deducted reservation");

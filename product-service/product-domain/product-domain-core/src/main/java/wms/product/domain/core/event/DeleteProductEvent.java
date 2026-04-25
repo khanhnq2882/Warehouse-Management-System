@@ -7,4 +7,9 @@ public class DeleteProductEvent extends ProductEvent{
     public DeleteProductEvent(Product product, ZonedDateTime createdAt) {
         super(product, createdAt);
     }
+
+    @Override
+    public void fire() {
+
+    }
 }

@@ -1,6 +1,8 @@
 package wms.inventory.service.domain.valueobject;
 
 public enum ReservationStatus {
+    REQUESTED,
+
     /**
      * RESERVED:
      * - Items are reserved (held) for an order

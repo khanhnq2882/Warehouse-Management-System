@@ -11,4 +11,32 @@
 
     <artifactId>inventory-application-service</artifactId>
 
+    <dependencies>
+        <dependency>
+            <groupId>com.warehouse.management.system</groupId>
+            <artifactId>inventory-domain-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.warehouse.management.system</groupId>
+            <artifactId>common-domain</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-tx</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+        </dependency>
+    </dependencies>
+
 </project>

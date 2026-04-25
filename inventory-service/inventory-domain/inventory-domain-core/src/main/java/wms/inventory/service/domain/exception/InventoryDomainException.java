@@ -6,8 +6,4 @@ public class InventoryDomainException extends DomainException {
     public InventoryDomainException(String message) {
         super(message);
     }
-
-    public InventoryDomainException(String message, Throwable cause) {
-        super(message, cause);
-    }
 }

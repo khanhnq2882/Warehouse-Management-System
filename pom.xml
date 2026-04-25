@@ -69,6 +69,16 @@
             </dependency>
             <dependency>
                 <groupId>com.warehouse.management.system</groupId>
+                <artifactId>inventory-domain-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.warehouse.management.system</groupId>
+                <artifactId>inventory-application-service</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.warehouse.management.system</groupId>
                 <artifactId>kafka-producer</artifactId>
                 <version>${project.version}</version>
             </dependency>
