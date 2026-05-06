@@ -102,7 +102,7 @@ public class InventoryCommandListenerImpl implements InventoryCommandListener {
     }
 
     private InventoryItem getExistInventoryItem (String productId, String warehouseId) {
-        Optional<InventoryItem> existInventoryItem = inventoryItemRepository.findInventoryItemByProductIdAndWarehouseId(
+        Optional<InventoryItem> existInventoryItem = inventoryItemRepository.findByProductIdAndWarehouseId(
                 UUID.fromString(productId),
                 UUID.fromString(warehouseId)
         );

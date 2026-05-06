@@ -5,6 +5,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface InventoryItemRepository {
-    Optional<InventoryItem> findInventoryItemByProductIdAndWarehouseId(UUID productId, UUID warehouseId);
+    Optional<InventoryItem> findByProductIdAndWarehouseId(UUID productId, UUID warehouseId);
     InventoryItem save(InventoryItem inventoryItem);
 }
